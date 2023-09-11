@@ -2,6 +2,11 @@
 #define IO_H_
 
 #include <k/types.h>
+#include <stdint.h>
+
+
+void __attribute__((cdecl)) Panic();
+void __attribute__((cdecl)) crash_me();
 
 static inline void outb(u16 port, u8 val)
 {

@@ -21,23 +21,45 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 #include <k/kstd.h>
+#include <stdint-gcc.h>
 
 #include "multiboot.h"
 
+#include "io.h"
+#include "gdt.h"
+#include "idt.h"
+#include "isr.h"
+#include "serial.h"
+#include "stdio.h"
 
 void k_main(unsigned long magic, multiboot_info_t *info)
 {
-	(void)magic;
-	(void)info;
+    (void)magic;
+    (void)info;
 
-	char star[4] = "|/-\\";
-	char *fb = (void *)0xb8000;
+    char star[4] = "|/-\\";
+    // fb = Frame Buffer
+    char *fb = (void *)0xb8000;
+    setup_serial();
 
-	for (unsigned i = 0; ; ) {
-		*fb = star[i++ % 4];
-	}
 
-	for (;;)
-		asm volatile ("hlt");
+    GDT_Initialize();
+    IDT_Initialize();
+    ISR_Initialize();
+
+    write("this is a test", 14);
+    //crash_me();
+    //__asm("int $0x2");
+    //int i = 1/0;
+    //printf("%i", i);
+
+
+    for (unsigned i = 0; ; ) {
+        *fb = star[i++ % 4];
+    }
+
+    for (;;)
+        asm volatile ("hlt");
 }
